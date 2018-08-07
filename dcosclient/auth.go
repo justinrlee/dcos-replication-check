@@ -1,4 +1,4 @@
-package dcos-client
+package dcosclient
 
 import (
 	"encoding/json"
@@ -7,6 +7,19 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/dgrijalva/jwt-go"
 )
+
+// Need to see if this can be removed later
+//DcosBasicAuth struct
+type DcosBasicAuth struct {
+	UID      string `json:"uid"`
+	Password string `json:"password"`
+}
+
+// Need to see if this can be removed later
+//DcosAuthResponse struct
+type DcosAuthResponse struct {
+	Token string `json:"token"`
+}
 
 //AsSecret represents the structure of the secret created by the service account script
 type AsSecret struct {
@@ -29,7 +42,7 @@ type TokenClaims struct {
 }
 
 //Authenticate via a JWT token
-func (c *DcosClient) authSecret(asSecStr string) {
+func (c *Client) authSecret(asSecStr string) {
 	// Get the CA
 	//c.downloadFile("dcos-ca.crt", "/ca/dcos-ca.crt")
 
@@ -61,13 +74,15 @@ func (c *DcosClient) authSecret(asSecStr string) {
 	c.doAuth(authToken)
 }
 
-func (c *DcosClient) authUserPassword(user, pass string) {
+// Authenticate via User/Password
+func (c *Client) authUserPassword(user, pass string) {
 	usrPass := DcosBasicAuth{user, pass}
 	c.doAuth(usrPass)
 }
 
-func (c *DcosClient) doAuth(authData interface{}) {
-	req, err := client.newRequest("POST", "/acs/api/v1/auth/login", authData)
+// Make an auth request, store it in the token
+func (c *Client) doAuth(authData interface{}) {
+	req, err := c.newRequest("POST", 443, "/acs/api/v1/auth/login", authData)
 	if err != nil {
 		logrus.Errorln(err)
 		logrus.Panicf("Error trying to authenticate with %s", authData)
@@ -86,7 +101,7 @@ func (c *DcosClient) doAuth(authData interface{}) {
 	c.Token = result.Token
 }
 
-func (c *DcosClient) auth() {
+func (c *Client) auth() {
 	asSecStr := os.Getenv("AS_SECRET")
 	user := os.Getenv("AS_USERID")
 	pass := os.Getenv("AS_PASSWORD")

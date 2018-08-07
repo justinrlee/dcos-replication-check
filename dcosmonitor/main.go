@@ -8,7 +8,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 
-	"github.com/justinrlee/dcos-replication-check/dcos-client"
+	"github.com/justinrlee/dcos-tools/dcosclient"
 )
 
 func setupLogger () {
@@ -38,7 +38,10 @@ func main () {
 		}
 	}()
 
-	client := dcos-Client.
+	// client := dcos-Client.
+	client := new(dcosclient.Client)
+
+	client.Host = "localhost"
 
 	router := NewRouter()
 	logrus.Fatal(http.ListenAndServe(":8083", router))
