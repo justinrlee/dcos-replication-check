@@ -42,7 +42,10 @@ func main () {
 	client := new(dcosclient.Client)
 
 	client.Host = "localhost"
-	client.auth()
+	req, err := client.NewRequest("GET", 443, "ca/dcos-ca.crt", nil)
+	if err != nil {
+		fmt.Println(req)
+	}
 
 	router := NewRouter()
 	logrus.Fatal(http.ListenAndServe(":8083", router))
