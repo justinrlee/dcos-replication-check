@@ -42,6 +42,7 @@ func main () {
 	client := new(dcosclient.Client)
 
 	client.Host = "localhost"
+	client.auth()
 
 	router := NewRouter()
 	logrus.Fatal(http.ListenAndServe(":8083", router))
