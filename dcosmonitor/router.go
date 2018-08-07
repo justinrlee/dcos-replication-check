@@ -23,6 +23,36 @@ var routes = []Route{
 		"/",
 		Index,
 	},
+	Route{
+		"MesosRepLog",
+		"GET",
+		"/mesos",
+		MesosRepLog,
+	},
+	Route{
+		"OverlayRepLog",
+		"GET",
+		"/overlay",
+		OverlayRepLog,
+	},
+	Route{
+		"RepLog",
+		"GET",
+		"/replog",
+		RepLog,
+	},
+	Route{
+		"Cockroach",
+		"GET",
+		"/cockroach",
+		Cockroach,
+	},
+	Route{
+		"Exhibitor",
+		"GET",
+		"/exhibitor",
+		Exhibitor,
+	},
 }
 
 //Logger provides a decorator for logging

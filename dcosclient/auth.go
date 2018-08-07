@@ -102,16 +102,16 @@ func (c *Client) doAuth(authData interface{}) {
 }
 
 func (c *Client) auth() {
-	asSecStr := os.Getenv("AS_SECRET")
-	user := os.Getenv("AS_USERID")
-	pass := os.Getenv("AS_PASSWORD")
+	asSecStr := os.Getenv("DCOS_SECRET")
+	user := os.Getenv("DCOS_USERID")
+	pass := os.Getenv("DCOS_PASSWORD")
 	// Did we get a service account with a secret?
 	if len(asSecStr) > 0 {
 		c.authSecret(asSecStr)
 	} else {
 		// Did we get username/password?
 		if len(user) == 0 || len(pass) == 0 {
-			logrus.Panicln("Missing AS_SECRET or (AS_USERID and AS_PASSWORD) environment variables")
+			logrus.Panicln("Missing DCOS_SECRET or (DCOS_USERID and DCOS_PASSWORD) environment variables")
 		} else {
 			c.authUserPassword(user, pass)
 		}

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	// "fmt"
 	// "time"
 
 	"github.com/Sirupsen/logrus"
@@ -20,6 +21,11 @@ func setupLogger () {
 	logrus.SetLevel(logrus.InfoLevel)
 }
 
+// I hate this.
+var client *dcosclient.Client
+
+// func init() {
+// }
 
 func main () {
 	setupLogger()
@@ -39,13 +45,22 @@ func main () {
 	}()
 
 	// client := dcos-Client.
-	client := new(dcosclient.Client)
 
-	client.Host = "localhost"
-	req, err := client.NewRequest("GET", 443, "ca/dcos-ca.crt", nil)
-	if err != nil {
-		fmt.Println(req)
-	}
+	client = new(dcosclient.Client)
+
+	client.Host = "34.221.25.119"
+	client.UserAgent = "dcosmonitor"
+	
+	client.Setup()
+
+	// Used for testing
+	// body, err := client.Request("GET", 443, "ca/dcos-ca.crt")
+	// if err != nil {
+	// 	fmt.Println("Something broke")
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(body)
+	// }
 
 	router := NewRouter()
 	logrus.Fatal(http.ListenAndServe(":8083", router))

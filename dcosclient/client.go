@@ -2,14 +2,15 @@ package dcosclient
 
 import (
 	"bytes"
-	// "crypto/tls"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	// "os"
-	// "time"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 )
@@ -21,10 +22,38 @@ type Client struct {
 	Token      string
 }
 
-func getClient() {
+func (c *Client) Setup() {
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	
+	c.httpClient = &http.Client{Transport: tr, Timeout: time.Second * 10}
+	c.auth()
+}
+
+// For external use
+func (c *Client) Request(method string, port int, path string) ([]byte, error) {
+		
+	req, err := c.newRequest(method, port, path, nil)
+
+	if err != nil {
+		fmt.Println("Error generating request")
+		logrus.Infoln(err)
+	}
+
+	body, err := c.do(req)
+
+	if err != nil {
+		fmt.Println("Error running request")
+		logrus.Infoln(err)
+	}
+
+	return body, err
 
 }
 
+// Internal use
 func (c *Client) newRequest(method string, port int, path string, body interface{}) (*http.Request, error) {
 	var buf io.ReadWriter
 	if body != nil {
@@ -37,7 +66,9 @@ func (c *Client) newRequest(method string, port int, path string, body interface
 
 	// Generate URL from parameters.  
 	// TODO adapt to try both http and https
-	url := "https://" + c.Host + ":" + string(port) + "/" + path
+	url := "https://" + c.Host + ":" + strconv.Itoa(port) + "/" + path
+
+	logrus.Infoln(url)
 
 	req, err := http.NewRequest(method, url, buf)
 	if err != nil {
